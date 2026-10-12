@@ -62,24 +62,34 @@ def _strip_string_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def clean_data(df: pd.DataFrame, drop_id: bool = True) -> pd.DataFrame:
-    """Làm sạch dữ liệu thô.
+def clean_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Làm sạch phần đặc trưng (không đụng tới target/ID).
+
+    Dùng chung cho cả huấn luyện lẫn inference để đảm bảo cùng logic:
 
     - Xóa khoảng trắng thừa, chuỗi rỗng -> NaN.
     - Ép ``TotalCharges`` sang số.
-    - Khách mới (``tenure = 0``) có ``TotalCharges`` trống -> gán ``0`` đúng
-      nghiệp vụ (thay vì để imputer điền median sai lệch).
-    - Mã hóa target ``Churn`` từ ``{"No":0, "Yes":1}``.
-    - Bỏ cột ID (nếu ``drop_id=True``).
+    - Khách mới (``tenure = 0``) có ``TotalCharges`` trống -> gán ``0``.
     """
     df = _strip_string_columns(df)
 
     if "TotalCharges" in df.columns:
         df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
-        # Khách mới chưa phát sinh cước -> TotalCharges = 0 (không phải NaN).
         if TENURE_COL in df.columns:
             new_customer = df[TENURE_COL].eq(0)
             df.loc[new_customer & df["TotalCharges"].isna(), "TotalCharges"] = 0.0
+
+    return df
+
+
+def clean_data(df: pd.DataFrame, drop_id: bool = True) -> pd.DataFrame:
+    """Làm sạch dữ liệu thô (đặc trưng + target + bỏ ID).
+
+    - Làm sạch đặc trưng qua :func:`clean_features`.
+    - Mã hóa target ``Churn`` từ ``{"No":0, "Yes":1}``.
+    - Bỏ cột ID (nếu ``drop_id=True``).
+    """
+    df = clean_features(df)
 
     if TARGET_COL in df.columns:
         target_raw = df[TARGET_COL].astype("string").str.strip().str.title()

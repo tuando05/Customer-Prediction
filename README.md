@@ -59,6 +59,28 @@ python -m src.features.split
 
 # 4. Huấn luyện baseline Logistic Regression -> artifacts/churn_model.joblib
 python -m src.models.train
+
+# 5. (tùy chọn) Dự đoán nhanh trên file CSV
+python -m src.models.predict --input data/processed/X_test.csv --limit 5
+
+# 6. Chạy API  (Swagger UI: http://127.0.0.1:8000/docs)
+uvicorn app.main:app --reload
+
+# 7. Chạy tests
+pytest -q
+```
+
+Ví dụ gọi API:
+
+```bash
+curl -X POST "http://127.0.0.1:8000/predict" -H "Content-Type: application/json" -d "{
+  \"gender\": \"Female\", \"SeniorCitizen\": 0, \"Partner\": \"Yes\", \"Dependents\": \"No\",
+  \"tenure\": 1, \"PhoneService\": \"No\", \"MultipleLines\": \"No phone service\",
+  \"InternetService\": \"DSL\", \"OnlineSecurity\": \"No\", \"OnlineBackup\": \"Yes\",
+  \"DeviceProtection\": \"No\", \"TechSupport\": \"No\", \"StreamingTV\": \"No\",
+  \"StreamingMovies\": \"No\", \"Contract\": \"Month-to-month\", \"PaperlessBilling\": \"Yes\",
+  \"PaymentMethod\": \"Electronic check\", \"MonthlyCharges\": 29.85, \"TotalCharges\": 29.85
+}"
 ```
 
 ## Lộ trình
@@ -68,5 +90,6 @@ python -m src.models.train
    so sánh Decision Tree / Random Forest / XGBoost, tuning, SHAP, chọn threshold.
 3. **Giai đoạn 3 — Kiểm thử & đóng gói:** tests, MLflow, Docker, GitHub Actions.
 
-> Trạng thái hiện tại: đã có kiểm tra dữ liệu, tiền xử lý, chia tập và baseline Logistic Regression.
+> Trạng thái hiện tại: đã hoàn tất MVP — kiểm tra dữ liệu, tiền xử lý, chia tập,
+> baseline Logistic Regression, API dự đoán (FastAPI) và tests.
 
