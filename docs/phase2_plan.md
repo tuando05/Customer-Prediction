@@ -115,8 +115,15 @@ Mỗi milestone là một commit riêng, có số liệu trước/sau.
 - **Chi phí tính toán:** XGBoost + tuning có thể chậm; giới hạn `n_iter`/`n_jobs`.
 - **Tái lập:** cố định `random_state`, cùng seed cho mọi so sánh.
 
-## 7. Quyết định cần chốt trước khi bắt đầu
+## 7. Quyết định đã chốt
 
-1. **Metric ưu tiên:** PR-AUC tổng hợp, hay Recall ở mức cố định (phụ thuộc chi phí FN vs FP)?
-2. **Thư viện bổ sung:** thêm `imbalanced-learn` (SMOTE) và `optuna` (tuning) không?
-3. **MLflow:** dùng ngay ở Giai đoạn 2 hay để Giai đoạn 3?
+1. **Metric ưu tiên:** ✅ **PR-AUC** — dùng để xếp hạng model và làm `scoring` khi tuning.
+   Threshold vẫn được chọn riêng ở Nhóm G theo mục tiêu kinh doanh.
+2. **Thư viện bổ sung:** ⏳ **chưa thêm gì** — ưu tiên dùng scikit-learn
+   (`class_weight`, `RandomizedSearchCV`). Cài `imbalanced-learn` (SMOTE) hoặc `optuna`
+   sau, chỉ khi thấy thực sự cần. Vì vậy:
+   - Nhóm C: bắt đầu với `class_weight="balanced"` và undersampling thủ công;
+     SMOTE để sau (tùy chọn).
+   - Nhóm E: dùng `RandomizedSearchCV` của scikit-learn; Optuna để sau (tùy chọn).
+3. **MLflow:** ✅ để **Giai đoạn 3**. Giai đoạn 2 log kết quả ra `reports/` (JSON/CSV).
+
