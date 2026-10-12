@@ -45,6 +45,22 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 └── README.md
 ```
 
+## Chạy nhanh (MVP)
+
+```bash
+# 1. Kiểm tra chất lượng dữ liệu thô
+python -m src.features.validate_data
+
+# 2. Làm sạch dữ liệu -> data/processed/churn_clean.csv
+python -m src.features.preprocess
+
+# 3. Chia train/val/test (stratified) -> data/processed/*.csv
+python -m src.features.split
+
+# 4. Huấn luyện baseline Logistic Regression -> artifacts/churn_model.joblib
+python -m src.models.train
+```
+
 ## Lộ trình
 
 1. **Giai đoạn 1 — MVP:** dữ liệu thô → Logistic Regression baseline → FastAPI (`/health`, `/predict`).
@@ -52,4 +68,5 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
    so sánh Decision Tree / Random Forest / XGBoost, tuning, SHAP, chọn threshold.
 3. **Giai đoạn 3 — Kiểm thử & đóng gói:** tests, MLflow, Docker, GitHub Actions.
 
-> Trạng thái hiện tại: mới dựng **cấu trúc**, chưa triển khai code.
+> Trạng thái hiện tại: đã có kiểm tra dữ liệu, tiền xử lý, chia tập và baseline Logistic Regression.
+
