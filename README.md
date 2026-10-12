@@ -24,7 +24,7 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── config.py               # đường dẫn & hằng số dùng chung
 │   ├── features/
 │   │   ├── preprocess.py       # làm sạch + pipeline tiền xử lý
-│   │   ├── split.py            # chia train/test (stratified)
+│   │   ├── split.py            # chia train/val/test (stratified)
 │   │   └── build_features.py   # feature engineering (Giai đoạn 2)
 │   ├── models/
 │   │   ├── train.py            # huấn luyện

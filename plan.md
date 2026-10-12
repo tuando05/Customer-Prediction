@@ -70,7 +70,7 @@ churn-mle/
 
 1. Tải dataset, hiểu cấu trúc và phân phối cơ bản.
 2. Xử lý nhanh: missing values, mã hóa biến phân loại, chuẩn hóa số liệu.
-3. Chia train/test (stratified để giữ tỷ lệ churn).
+3. Chia train/val/test (stratified để giữ tỷ lệ churn).
 4. Huấn luyện **Logistic Regression** làm baseline đơn giản.
 5. Đánh giá nhanh bằng Precision, Recall, F1, ROC-AUC, PR-AUC.
 6. Lưu model + preprocessing pipeline.

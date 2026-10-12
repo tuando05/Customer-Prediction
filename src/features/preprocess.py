@@ -35,6 +35,7 @@ from src.config import (
     RAW_DATA_PATH,
     TARGET_COL,
     TARGET_MAP,
+    TENURE_COL,
 )
 
 
@@ -65,7 +66,9 @@ def clean_data(df: pd.DataFrame, drop_id: bool = True) -> pd.DataFrame:
     """Làm sạch dữ liệu thô.
 
     - Xóa khoảng trắng thừa, chuỗi rỗng -> NaN.
-    - Ép ``TotalCharges`` sang số (11 giá trị trống của khách mới thành NaN).
+    - Ép ``TotalCharges`` sang số.
+    - Khách mới (``tenure = 0``) có ``TotalCharges`` trống -> gán ``0`` đúng
+      nghiệp vụ (thay vì để imputer điền median sai lệch).
     - Mã hóa target ``Churn`` từ ``{"No":0, "Yes":1}``.
     - Bỏ cột ID (nếu ``drop_id=True``).
     """
@@ -73,6 +76,10 @@ def clean_data(df: pd.DataFrame, drop_id: bool = True) -> pd.DataFrame:
 
     if "TotalCharges" in df.columns:
         df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
+        # Khách mới chưa phát sinh cước -> TotalCharges = 0 (không phải NaN).
+        if TENURE_COL in df.columns:
+            new_customer = df[TENURE_COL].eq(0)
+            df.loc[new_customer & df["TotalCharges"].isna(), "TotalCharges"] = 0.0
 
     if TARGET_COL in df.columns:
         target_raw = df[TARGET_COL].astype("string").str.strip().str.title()

@@ -23,8 +23,10 @@ REPORTS_DIR = PROJECT_ROOT / "reports"
 RAW_DATA_PATH = RAW_DATA_DIR / "WA_Fn-UseC_-Telco-Customer-Churn.csv"
 CLEAN_DATA_PATH = PROCESSED_DATA_DIR / "churn_clean.csv"
 X_TRAIN_PATH = PROCESSED_DATA_DIR / "X_train.csv"
+X_VAL_PATH = PROCESSED_DATA_DIR / "X_val.csv"
 X_TEST_PATH = PROCESSED_DATA_DIR / "X_test.csv"
 Y_TRAIN_PATH = PROCESSED_DATA_DIR / "y_train.csv"
+Y_VAL_PATH = PROCESSED_DATA_DIR / "y_val.csv"
 Y_TEST_PATH = PROCESSED_DATA_DIR / "y_test.csv"
 
 # ---------------------------------------------------------------------------
@@ -33,6 +35,7 @@ Y_TEST_PATH = PROCESSED_DATA_DIR / "y_test.csv"
 
 TARGET_COL = "Churn"
 ID_COL = "customerID"
+TENURE_COL = "tenure"
 
 # Cột target dạng chữ -> nhãn số (1 = churn).
 TARGET_MAP = {"No": 0, "Yes": 1}
@@ -44,3 +47,4 @@ POSITIVE_LABEL = 1
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
+VAL_SIZE = 0.2
