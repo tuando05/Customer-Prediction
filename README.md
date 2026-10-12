@@ -21,8 +21,11 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── 01_eda.ipynb         # khám phá dữ liệu
 │   └── 02_modeling.ipynb    # thử nghiệm & so sánh mô hình
 ├── src/
+│   ├── config.py               # đường dẫn & hằng số dùng chung
 │   ├── features/
-│   │   └── build_features.py   # preprocessing + feature engineering
+│   │   ├── preprocess.py       # làm sạch + pipeline tiền xử lý
+│   │   ├── split.py            # chia train/test (stratified)
+│   │   └── build_features.py   # feature engineering (Giai đoạn 2)
 │   ├── models/
 │   │   ├── train.py            # huấn luyện
 │   │   ├── evaluate.py         # đánh giá

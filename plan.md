@@ -26,7 +26,10 @@ churn-mle/
 │   ├── 01_eda.ipynb
 │   └── 02_modeling.ipynb
 ├── src/
+│   ├── config.py
 │   ├── features/
+│   │   ├── preprocess.py
+│   │   ├── split.py
 │   │   └── build_features.py
 │   ├── models/
 │   │   ├── train.py
