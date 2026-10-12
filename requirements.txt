@@ -1,0 +1,19 @@
+# Core ML
+pandas
+numpy
+scikit-learn
+xgboost
+shap
+
+# EDA / visualization
+matplotlib
+seaborn
+jupyter
+
+# Model serving
+fastapi
+uvicorn[standard]
+
+# Testing
+pytest
+httpx
