@@ -80,6 +80,8 @@ churn-mle/
 
 ### Giai đoạn 2 — Cải thiện mô hình (sau MVP)
 
+> Kế hoạch chi tiết: [`docs/phase2_plan.md`](docs/phase2_plan.md).
+
 **Mục tiêu:** Nâng chất lượng dự đoán bằng EDA sâu hơn và so sánh nhiều mô hình.
 
 1. EDA chi tiết: mối quan hệ đặc trưng ↔ churn, ma trận tương quan.

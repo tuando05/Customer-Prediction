@@ -40,6 +40,8 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   └── test_api.py
 ├── reports/                  # kết quả đánh giá (không commit)
 ├── artifacts/                # model đã huấn luyện (không commit)
+├── docs/
+│   └── phase2_plan.md        # kế hoạch chi tiết Giai đoạn 2
 ├── requirements.txt
 ├── pyproject.toml
 └── README.md
