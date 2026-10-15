@@ -11,6 +11,7 @@ Cách dùng nhanh::
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from functools import lru_cache
 from pathlib import Path
@@ -19,7 +20,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from src.config import MODEL_PATH
+from src.config import MODEL_PATH, THRESHOLD_PATH
 from src.features.preprocess import clean_features
 
 
@@ -60,8 +61,10 @@ class ChurnPredictor:
         """Trả về xác suất churn (lớp 1) cho từng dòng."""
         return self.model.predict_proba(self._prepare(X))[:, 1]
 
-    def predict(self, X: pd.DataFrame, threshold: float = 0.5) -> np.ndarray:
-        """Trả về nhãn 0/1 theo ngưỡng quyết định."""
+    def predict(self, X: pd.DataFrame, threshold: float | None = None) -> np.ndarray:
+        """Trả về nhãn 0/1. Nếu ``threshold=None`` thì dùng threshold đã lưu."""
+        if threshold is None:
+            threshold = get_default_threshold()
         return (self.predict_proba(X) >= threshold).astype(int)
 
 
@@ -81,11 +84,30 @@ def get_predictor() -> ChurnPredictor:
     return load_predictor()
 
 
+def load_threshold(path: Path = THRESHOLD_PATH, default: float = 0.5) -> float:
+    """Đọc threshold đã chọn (``artifacts/threshold.json``); mặc định 0.5 nếu chưa có."""
+    if Path(path).exists():
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        return float(data.get("threshold", default))
+    return default
+
+
+@lru_cache(maxsize=1)
+def get_default_threshold() -> float:
+    """Threshold dùng chung cho API/CLI (cache 1 lần)."""
+    return load_threshold()
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Dự đoán churn trên file CSV đặc trưng.")
     parser.add_argument("--input", type=Path, required=True, help="CSV đặc trưng (không có target).")
     parser.add_argument("--model", type=Path, default=MODEL_PATH, help="Đường dẫn model.")
-    parser.add_argument("--threshold", type=float, default=0.5, help="Ngưỡng quyết định.")
+    parser.add_argument(
+        "--threshold",
+        type=float,
+        default=None,
+        help="Ngưỡng quyết định (mặc định: đọc từ artifacts/threshold.json).",
+    )
     parser.add_argument("--limit", type=int, default=10, help="Số dòng in ra.")
     return parser.parse_args(argv)
 
@@ -97,14 +119,15 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parse_args(argv)
     predictor = load_predictor(args.model)
+    threshold = args.threshold if args.threshold is not None else get_default_threshold()
     X = pd.read_csv(args.input)
     proba = predictor.predict_proba(X)
-    labels = (proba >= args.threshold).astype(int)
+    labels = (proba >= threshold).astype(int)
 
     preview = pd.DataFrame(
         {"churn_probability": proba, "churn": labels}
     ).head(args.limit)
-    print(f"Đã dự đoán {len(X)} dòng (threshold={args.threshold}). {args.limit} dòng đầu:")
+    print(f"Đã dự đoán {len(X)} dòng (threshold={threshold:.2f}). {args.limit} dòng đầu:")
     print(preview.to_string(index=False))
     print(f"\nTỷ lệ dự đoán churn: {labels.mean():.1%}")
     return 0

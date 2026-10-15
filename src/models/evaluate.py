@@ -80,3 +80,82 @@ def format_metrics(metrics: dict[str, float]) -> str:
         f"FN={metrics['false_negative']} TN={metrics['true_negative']}"
     )
     return f"threshold={metrics['threshold']:.2f} | " + " ".join(parts) + f" | {cm}"
+
+
+# Lưới threshold mặc định để dò điểm vận hành.
+THRESHOLD_GRID = np.round(np.arange(0.05, 1.0, 0.01), 2)
+
+
+def threshold_curve(
+    y_true: pd.Series | np.ndarray,
+    y_score: np.ndarray,
+    thresholds: np.ndarray | None = None,
+) -> pd.DataFrame:
+    """Bảng metric (precision/recall/f1/accuracy + confusion) theo từng threshold."""
+    y_true = np.asarray(y_true)
+    y_score = np.asarray(y_score)
+    if thresholds is None:
+        thresholds = THRESHOLD_GRID
+
+    rows = []
+    for t in thresholds:
+        y_pred = (y_score >= t).astype(int)
+        tp = int(((y_pred == 1) & (y_true == 1)).sum())
+        fp = int(((y_pred == 1) & (y_true == 0)).sum())
+        fn = int(((y_pred == 0) & (y_true == 1)).sum())
+        tn = int(((y_pred == 0) & (y_true == 0)).sum())
+        precision = tp / (tp + fp) if (tp + fp) else 0.0
+        recall = tp / (tp + fn) if (tp + fn) else 0.0
+        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+        accuracy = (tp + tn) / len(y_true) if len(y_true) else 0.0
+        rows.append(
+            {
+                "threshold": round(float(t), 4),
+                "precision": precision,
+                "recall": recall,
+                "f1": f1,
+                "accuracy": accuracy,
+                "tp": tp,
+                "fp": fp,
+                "fn": fn,
+                "tn": tn,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def pick_threshold(
+    y_true: pd.Series | np.ndarray,
+    y_score: np.ndarray,
+    strategy: str = "max_f1",
+    min_recall: float | None = None,
+    cost_fn: float = 1.0,
+    cost_fp: float = 1.0,
+    thresholds: np.ndarray | None = None,
+) -> dict[str, float]:
+    """Chọn threshold theo mục tiêu.
+
+    - ``max_f1``: threshold cho F1 cao nhất.
+    - ``target_recall``: đạt ``min_recall`` rồi tối đa Precision.
+    - ``min_cost``: tối thiểu ``cost_fn * FN + cost_fp * FP``.
+    """
+    curve = threshold_curve(y_true, y_score, thresholds)
+
+    if strategy == "max_f1":
+        idx = curve["f1"].idxmax()
+    elif strategy == "target_recall":
+        if min_recall is None:
+            raise ValueError("strategy='target_recall' cần tham số min_recall.")
+        candidates = curve[curve["recall"] >= min_recall]
+        idx = candidates["precision"].idxmax() if not candidates.empty else curve["recall"].idxmax()
+    elif strategy == "min_cost":
+        cost = cost_fn * curve["fn"] + cost_fp * curve["fp"]
+        idx = cost.idxmin()
+    else:
+        raise ValueError(f"strategy không hợp lệ: {strategy}")
+
+    row = curve.loc[idx].to_dict()
+    row["strategy"] = strategy
+    if strategy == "min_cost":
+        row["cost"] = cost_fn * row["fn"] + cost_fp * row["fp"]
+    return row

@@ -31,9 +31,11 @@ Y_TEST_PATH = PROCESSED_DATA_DIR / "y_test.csv"
 
 # Kết quả huấn luyện
 MODEL_PATH = ARTIFACTS_DIR / "churn_model.joblib"
+THRESHOLD_PATH = ARTIFACTS_DIR / "threshold.json"
 TRAIN_METRICS_PATH = REPORTS_DIR / "train_metrics.json"
 MODEL_COMPARISON_PATH = REPORTS_DIR / "model_comparison.csv"
 IMBALANCE_COMPARISON_PATH = REPORTS_DIR / "imbalance_comparison.csv"
+THRESHOLD_CURVE_PATH = REPORTS_DIR / "threshold_curve.csv"
 
 # ---------------------------------------------------------------------------
 # Cột & nhãn

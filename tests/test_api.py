@@ -50,7 +50,8 @@ def test_predict(client):
     body = resp.json()
     assert isinstance(body["churn"], bool)
     assert 0.0 <= body["churn_probability"] <= 1.0
-    assert body["threshold"] == 0.5
+    assert 0.0 <= body["threshold"] <= 1.0
+    assert body["churn"] == (body["churn_probability"] >= body["threshold"])
 
 
 def test_predict_voi_threshold(client):
