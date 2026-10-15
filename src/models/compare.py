@@ -43,14 +43,30 @@ SCORING = {
 }
 
 
+def _build_estimator(name: str, y: pd.Series, class_weight: str | None):
+    """Khởi tạo estimator, quy đổi 'balanced' sang tham số phù hợp từng loại.
+
+    XGBoost không có ``class_weight`` nên dùng ``scale_pos_weight = neg/pos``.
+    """
+    scale_pos_weight = None
+    if class_weight == "balanced":
+        positives = int((y == 1).sum())
+        negatives = int((y == 0).sum())
+        scale_pos_weight = negatives / positives if positives else 1.0
+    return build_estimator(
+        name, class_weight=class_weight, scale_pos_weight=scale_pos_weight
+    )
+
+
 def cross_validate_model(
     name: str,
     X: pd.DataFrame,
     y: pd.Series,
     cv: StratifiedKFold,
+    class_weight: str | None = None,
 ) -> tuple[dict[str, float], float]:
     """Chạy cross-validation cho một mô hình, trả về (metrics trung bình, thời gian)."""
-    pipeline = build_model_pipeline(X, build_estimator(name))
+    pipeline = build_model_pipeline(X, _build_estimator(name, y, class_weight))
     start = time.perf_counter()
     result = cross_validate(
         pipeline, X, y, cv=cv, scoring=SCORING, n_jobs=-1, error_score="raise"
@@ -72,9 +88,10 @@ def holdout_val_scores(
     y: pd.Series,
     X_val: pd.DataFrame,
     y_val: pd.Series,
+    class_weight: str | None = None,
 ) -> dict[str, float]:
     """Fit trên train, đánh giá trên validation (threshold 0.5)."""
-    pipeline = build_model_pipeline(X, build_estimator(name))
+    pipeline = build_model_pipeline(X, _build_estimator(name, y, class_weight))
     pipeline.fit(X, y)
     metrics = evaluate_model(pipeline, X_val, y_val)
     return {
@@ -91,13 +108,16 @@ def compare_models(
     X_val: pd.DataFrame,
     y_val: pd.Series,
     folds: int = 5,
+    class_weight: str | None = None,
 ) -> pd.DataFrame:
     """So sánh các mô hình, trả về DataFrame xếp hạng theo PR-AUC."""
     cv = StratifiedKFold(n_splits=folds, shuffle=True, random_state=RANDOM_STATE)
     rows: dict[str, dict[str, float]] = {}
     for name in models:
-        cv_row, _ = cross_validate_model(name, X, y, cv)
-        cv_row.update(holdout_val_scores(name, X, y, X_val, y_val))
+        cv_row, _ = cross_validate_model(name, X, y, cv, class_weight=class_weight)
+        cv_row.update(
+            holdout_val_scores(name, X, y, X_val, y_val, class_weight=class_weight)
+        )
         rows[name] = cv_row
     df = pd.DataFrame(rows).T
     return df.sort_values("pr_auc_mean", ascending=False)
@@ -132,6 +152,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--folds", type=int, default=5, help="Số folds cho CV.")
     parser.add_argument(
+        "--class-weight",
+        choices=["none", "balanced"],
+        default="none",
+        help="'balanced' xử lý mất cân bằng lớp.",
+    )
+    parser.add_argument(
         "--output", type=Path, default=MODEL_COMPARISON_PATH, help="File CSV kết quả."
     )
     parser.add_argument("--no-save", action="store_true", help="Không ghi file CSV.")
@@ -144,13 +170,19 @@ def main(argv: list[str] | None = None) -> int:
             stream.reconfigure(encoding="utf-8", errors="replace")
 
     args = parse_args(argv)
+    class_weight = None if args.class_weight == "none" else "balanced"
     X, y = load_xy(X_TRAIN_PATH, Y_TRAIN_PATH)
     X_val, y_val = load_xy(X_VAL_PATH, Y_VAL_PATH)
 
-    print(f"So sánh {len(args.models)} mô hình | {args.folds}-fold CV | metric chính: PR-AUC")
+    print(
+        f"So sánh {len(args.models)} mô hình | {args.folds}-fold CV | "
+        f"metric chính: PR-AUC | class_weight={class_weight}"
+    )
     print(f"  Train: {len(X)} mẫu | Val: {len(X_val)} mẫu\n")
 
-    df = compare_models(args.models, X, y, X_val, y_val, folds=args.folds)
+    df = compare_models(
+        args.models, X, y, X_val, y_val, folds=args.folds, class_weight=class_weight
+    )
     print(_format_table(df))
     print(f"\n=> Mô hình tốt nhất theo PR-AUC: {df.index[0]}")
 

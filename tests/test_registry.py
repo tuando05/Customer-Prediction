@@ -21,6 +21,16 @@ def test_model_khong_hop_le():
         build_estimator("khong_ton_tai")
 
 
+def test_logreg_class_weight():
+    estimator = build_estimator("logreg", class_weight="balanced")
+    assert estimator.class_weight == "balanced"
+
+
+def test_xgb_scale_pos_weight():
+    estimator = build_estimator("xgb", scale_pos_weight=2.77)
+    assert estimator.scale_pos_weight == 2.77
+
+
 @pytest.mark.skipif(not X_TEST_PATH.exists(), reason="Chưa có dữ liệu đã chia.")
 def test_pipeline_co_du_ba_buoc():
     X = pd.read_csv(X_TEST_PATH).head(20)

@@ -60,6 +60,7 @@ def _make_xgb(**kw) -> XGBClassifier:
         max_depth=kw.get("max_depth", 4),
         subsample=kw.get("subsample", 0.9),
         colsample_bytree=kw.get("colsample_bytree", 0.9),
+        scale_pos_weight=kw.get("scale_pos_weight") or 1,
         random_state=RANDOM_STATE,
         n_jobs=-1,
         tree_method="hist",

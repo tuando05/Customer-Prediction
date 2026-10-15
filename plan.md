@@ -36,6 +36,7 @@ churn-mle/
 │   │   ├── evaluate.py
 │   │   ├── registry.py
 │   │   ├── compare.py
+│   │   ├── imbalance.py
 │   │   ├── tune.py
 │   │   └── predict.py
 │   └── pipeline.py
