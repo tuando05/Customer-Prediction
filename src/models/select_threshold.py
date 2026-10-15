@@ -40,15 +40,26 @@ from src.models.evaluate import (
     pick_threshold,
     threshold_curve,
 )
-from src.models.registry import MODEL_NAMES, build_estimator, build_model_pipeline
+from src.models.registry import (
+    MODEL_NAMES,
+    build_estimator,
+    build_model_pipeline,
+    resolve_estimator_params,
+)
 from src.models.train import load_xy
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Chọn threshold tối ưu cho model churn.")
-    parser.add_argument("--model", choices=MODEL_NAMES, default="logreg")
+    parser.add_argument("--model", choices=MODEL_NAMES, default="xgb")
     parser.add_argument(
         "--class-weight", choices=["none", "balanced"], default="balanced"
+    )
+    parser.add_argument(
+        "--tuned",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Dùng tham số đã tune (reports/tuning_results.json) nếu có.",
     )
     parser.add_argument(
         "--strategy",
@@ -74,9 +85,11 @@ def select_threshold(
     y_train,
     X_val,
     y_val,
+    tuned: bool = True,
 ) -> tuple[Pipeline, dict, pd.DataFrame]:
     """Fit model, dò threshold trên val, trả về (pipeline, threshold_info, curve)."""
-    estimator = build_estimator(model, class_weight=class_weight)
+    params = resolve_estimator_params(model, class_weight=class_weight, y=y_train, tuned=tuned)
+    estimator = build_estimator(model, **params)
     pipeline = build_model_pipeline(X_train, estimator)
     pipeline.fit(X_train, y_train)
 
@@ -106,13 +119,13 @@ def main(argv: list[str] | None = None) -> int:
 
     pipeline, chosen, curve = select_threshold(
         args.model, class_weight, args.strategy, args.min_recall, args.cost_fn, args.cost_fp,
-        X_train, y_train, X_val, y_val,
+        X_train, y_train, X_val, y_val, tuned=args.tuned,
     )
 
     base = evaluate_model(pipeline, X_val, y_val, threshold=0.5)
     best = evaluate_model(pipeline, X_val, y_val, threshold=chosen["threshold"])
 
-    print(f"Model={args.model} class_weight={class_weight} | strategy={args.strategy}")
+    print(f"Model={args.model} class_weight={class_weight} tuned={args.tuned} | strategy={args.strategy}")
     print(f"  [val @0.50] {format_metrics(base)}")
     print(f"  [val @chosen={chosen['threshold']:.2f}] {format_metrics(best)}")
 
@@ -134,6 +147,7 @@ def main(argv: list[str] | None = None) -> int:
                     "strategy": args.strategy,
                     "model": args.model,
                     "class_weight": class_weight,
+                    "tuned": args.tuned,
                     "min_recall": args.min_recall,
                     "cost_fn": args.cost_fn,
                     "cost_fp": args.cost_fp,

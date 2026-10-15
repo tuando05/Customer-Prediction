@@ -17,7 +17,6 @@ Cách dùng::
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
@@ -35,27 +34,19 @@ from src.config import (  # noqa: E402
     SHAP_BAR_PATH,
     SHAP_IMPORTANCE_PATH,
     SHAP_SUMMARY_PATH,
-    TUNING_RESULTS_PATH,
     X_TRAIN_PATH,
     Y_TRAIN_PATH,
 )
-from src.models.registry import MODEL_NAMES, build_estimator, build_model_pipeline  # noqa: E402
+from src.models.registry import (  # noqa: E402
+    MODEL_NAMES,
+    build_estimator,
+    build_model_pipeline,
+    load_tuned_params,
+    resolve_estimator_params,
+)
 from src.models.train import load_xy  # noqa: E402
 
 TREE_MODELS = {"xgb", "rf", "dtree"}
-
-
-def load_tuned_params(model: str, path: Path = TUNING_RESULTS_PATH) -> dict:
-    """Đọc best_params đã tune cho một model (bỏ tiền tố ``classifier__``)."""
-    if not Path(path).exists():
-        return {}
-    for entry in json.loads(Path(path).read_text(encoding="utf-8")):
-        if entry.get("model") == model:
-            return {
-                k.replace("classifier__", ""): v
-                for k, v in entry.get("best_params", {}).items()
-            }
-    return {}
 
 
 def _positive_class_values(shap_values) -> np.ndarray:
@@ -93,12 +84,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     X, y = load_xy(X_TRAIN_PATH, Y_TRAIN_PATH)
 
-    params = load_tuned_params(args.model) if args.tuned else {}
-    if args.class_weight == "balanced":
-        positives = int((y == 1).sum())
-        params.setdefault("class_weight", "balanced")
-        params.setdefault("scale_pos_weight", (int((y == 0).sum()) / positives) if positives else 1.0)
-
+    params = resolve_estimator_params(
+        args.model, class_weight=args.class_weight, y=y, tuned=args.tuned
+    )
     estimator = build_estimator(args.model, **params)
     pipeline = build_model_pipeline(X, estimator)
     pipeline.fit(X, y)

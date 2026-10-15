@@ -7,6 +7,8 @@ mọi mô hình được đánh giá trên cùng một cách xử lý dữ liệ
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Callable
 
 import pandas as pd
@@ -17,7 +19,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
-from src.config import RANDOM_STATE
+from src.config import RANDOM_STATE, TUNING_RESULTS_PATH
 from src.features.build_features import FeatureEngineer, add_engineered_features
 from src.features.preprocess import build_preprocessor
 
@@ -102,3 +104,47 @@ def build_model_pipeline(X: pd.DataFrame, estimator: BaseEstimator) -> Pipeline:
             ("classifier", estimator),
         ]
     )
+
+
+# ---------------------------------------------------------------------------
+# Tham số đã tune & xử lý mất cân bằng
+# ---------------------------------------------------------------------------
+
+
+def load_tuned_params(model: str, path: Path = TUNING_RESULTS_PATH) -> dict:
+    """Đọc ``best_params`` đã tune cho một model (bỏ tiền tố ``classifier__``)."""
+    if not Path(path).exists():
+        return {}
+    for entry in json.loads(Path(path).read_text(encoding="utf-8")):
+        if entry.get("model") == model:
+            return {
+                k.replace("classifier__", ""): v
+                for k, v in entry.get("best_params", {}).items()
+            }
+    return {}
+
+
+def resolve_estimator_params(
+    model: str,
+    class_weight: str | None = "none",
+    y: pd.Series | None = None,
+    tuned: bool = True,
+) -> dict:
+    """Gộp tham số đã tune với cấu hình xử lý mất cân bằng.
+
+    - ``tuned=True``: lấy ``best_params`` từ ``reports/tuning_results.json`` (nếu có).
+    - ``class_weight='balanced'``: bật class_weight; với XGBoost đặt
+      ``scale_pos_weight = neg/pos`` (chỉ khi chưa có từ tune).
+    """
+    params = load_tuned_params(model) if tuned else {}
+
+    if class_weight == "balanced":
+        params.setdefault("class_weight", "balanced")
+        if y is not None and "scale_pos_weight" not in params:
+            positives = int((y == 1).sum())
+            negatives = int((y == 0).sum())
+            params["scale_pos_weight"] = negatives / positives if positives else 1.0
+    else:
+        params.pop("class_weight", None)
+        params.pop("scale_pos_weight", None)
+    return params

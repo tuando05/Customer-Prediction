@@ -46,7 +46,8 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 ├── reports/                  # kết quả đánh giá (không commit)
 ├── artifacts/                # model đã huấn luyện (không commit)
 ├── docs/
-│   └── phase2_plan.md        # kế hoạch chi tiết Giai đoạn 2
+│   ├── phase2_plan.md        # kế hoạch chi tiết Giai đoạn 2
+│   └── phase2_results.md     # kết quả Giai đoạn 2
 ├── requirements.txt
 ├── pyproject.toml
 └── README.md
@@ -67,7 +68,7 @@ python -m src.features.split
 # 4. Huấn luyện model (baseline) -> artifacts/churn_model.joblib
 python -m src.models.train
 
-# 5. Chọn threshold tối ưu (mặc định logreg + balanced) -> artifacts/threshold.json
+# 5. Huấn luyện model cuối + chọn threshold (mặc định XGBoost tuned + balanced)
 python -m src.models.select_threshold
 
 # 6. (tùy chọn) Dự đoán nhanh trên file CSV
@@ -79,6 +80,8 @@ uvicorn app.main:app --reload
 # 8. Chạy tests
 pytest -q
 ```
+
+> Hoặc chạy trọn gói từ dữ liệu thô đến model cuối: `python -m src.pipeline`.
 
 Ví dụ gọi API:
 
@@ -100,7 +103,8 @@ curl -X POST "http://127.0.0.1:8000/predict" -H "Content-Type: application/json"
    so sánh Decision Tree / Random Forest / XGBoost, tuning, SHAP, chọn threshold.
 3. **Giai đoạn 3 — Kiểm thử & đóng gói:** tests, MLflow, Docker, GitHub Actions.
 
-> Trạng thái hiện tại: hoàn tất MVP và đang ở **Giai đoạn 2** — đã có EDA, feature
-> engineering, so sánh mô hình (CV), xử lý mất cân bằng và chọn threshold. Best hiện tại:
-> **LogisticRegression + `class_weight='balanced'`** (val PR-AUC 0.673, Recall 0.73 @ threshold 0.62).
+> Trạng thái hiện tại: **hoàn tất Giai đoạn 2**. Best model = **XGBoost tuned +
+> `scale_pos_weight` balanced + threshold 0.53** — val PR-AUC 0.673 / Recall 0.78,
+> test PR-AUC 0.623 / Recall 0.75.
+> (Đã có EDA, feature engineering, so sánh mô hình bằng CV, xử lý mất cân bằng, SHAP.)
 
