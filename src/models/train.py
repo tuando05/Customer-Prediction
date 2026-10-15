@@ -37,6 +37,7 @@ from src.config import (
     Y_TRAIN_PATH,
     Y_VAL_PATH,
 )
+from src.features.build_features import FeatureEngineer, add_engineered_features
 from src.features.preprocess import build_preprocessor
 from src.models.evaluate import evaluate_model, format_metrics
 
@@ -54,10 +55,17 @@ def build_pipeline(
     C: float = 1.0,
     max_iter: int = 1000,
 ) -> Pipeline:
-    """Dựng pipeline: tiền xử lý + LogisticRegression."""
+    """Dựng pipeline: feature engineering + tiền xử lý + LogisticRegression.
+
+    ``ColumnTransformer`` được dựng dựa trên các cột **sau** khi tạo đặc trưng,
+    nên ``FeatureEngineer`` phải chạy trước nó.
+    """
+    engineered = add_engineered_features(X_train)
+    preprocessor = build_preprocessor(engineered)
     return Pipeline(
         steps=[
-            ("preprocessor", build_preprocessor(X_train)),
+            ("features", FeatureEngineer()),
+            ("preprocessor", preprocessor),
             (
                 "classifier",
                 LogisticRegression(
