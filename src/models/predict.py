@@ -31,8 +31,17 @@ class ChurnPredictor:
 
     @property
     def feature_names(self) -> list[str]:
-        """Tên các đặc trưng mà model mong đợi (theo thứ tự)."""
+        """Tên các đặc trưng mà model mong đợi (theo thứ tự).
+
+        Với Pipeline, tên có thể nằm ở bước đầu tiên (ví dụ ``FeatureEngineer``)
+        chứ không phải trên chính Pipeline.
+        """
         names = getattr(self.model, "feature_names_in_", None)
+        if names is None and hasattr(self.model, "steps"):
+            for _, step in self.model.steps:
+                names = getattr(step, "feature_names_in_", None)
+                if names is not None:
+                    break
         return list(names) if names is not None else []
 
     def _prepare(self, X: pd.DataFrame) -> pd.DataFrame:

@@ -32,6 +32,7 @@ Y_TEST_PATH = PROCESSED_DATA_DIR / "y_test.csv"
 # Kết quả huấn luyện
 MODEL_PATH = ARTIFACTS_DIR / "churn_model.joblib"
 TRAIN_METRICS_PATH = REPORTS_DIR / "train_metrics.json"
+MODEL_COMPARISON_PATH = REPORTS_DIR / "model_comparison.csv"
 
 # ---------------------------------------------------------------------------
 # Cột & nhãn

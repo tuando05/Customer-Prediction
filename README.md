@@ -29,6 +29,8 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── models/
 │   │   ├── train.py            # huấn luyện
 │   │   ├── evaluate.py         # đánh giá
+│   │   ├── registry.py         # đăng ký các mô hình
+│   │   ├── compare.py          # so sánh mô hình bằng CV
 │   │   ├── tune.py             # tinh chỉnh siêu tham số
 │   │   └── predict.py          # inference
 │   └── pipeline.py             # pipeline huấn luyện end-to-end

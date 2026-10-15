@@ -34,6 +34,8 @@ churn-mle/
 │   ├── models/
 │   │   ├── train.py
 │   │   ├── evaluate.py
+│   │   ├── registry.py
+│   │   ├── compare.py
 │   │   ├── tune.py
 │   │   └── predict.py
 │   └── pipeline.py

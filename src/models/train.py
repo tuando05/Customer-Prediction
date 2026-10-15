@@ -23,7 +23,6 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
 from src.config import (
@@ -37,9 +36,8 @@ from src.config import (
     Y_TRAIN_PATH,
     Y_VAL_PATH,
 )
-from src.features.build_features import FeatureEngineer, add_engineered_features
-from src.features.preprocess import build_preprocessor
 from src.models.evaluate import evaluate_model, format_metrics
+from src.models.registry import MODEL_NAMES, build_estimator, build_model_pipeline
 
 
 def load_xy(x_path: Path, y_path: Path) -> tuple[pd.DataFrame, pd.Series]:
@@ -51,32 +49,16 @@ def load_xy(x_path: Path, y_path: Path) -> tuple[pd.DataFrame, pd.Series]:
 
 def build_pipeline(
     X_train: pd.DataFrame,
+    model: str = "logreg",
     class_weight: str | None = None,
     C: float = 1.0,
     max_iter: int = 1000,
 ) -> Pipeline:
-    """Dựng pipeline: feature engineering + tiền xử lý + LogisticRegression.
-
-    ``ColumnTransformer`` được dựng dựa trên các cột **sau** khi tạo đặc trưng,
-    nên ``FeatureEngineer`` phải chạy trước nó.
-    """
-    engineered = add_engineered_features(X_train)
-    preprocessor = build_preprocessor(engineered)
-    return Pipeline(
-        steps=[
-            ("features", FeatureEngineer()),
-            ("preprocessor", preprocessor),
-            (
-                "classifier",
-                LogisticRegression(
-                    C=C,
-                    max_iter=max_iter,
-                    class_weight=class_weight,
-                    random_state=RANDOM_STATE,
-                ),
-            ),
-        ]
+    """Dựng pipeline: feature engineering + tiền xử lý + estimator."""
+    estimator = build_estimator(
+        model, class_weight=class_weight, C=C, max_iter=max_iter
     )
+    return build_model_pipeline(X_train, estimator)
 
 
 def train(
@@ -90,7 +72,13 @@ def train(
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Huấn luyện baseline churn.")
+    parser = argparse.ArgumentParser(description="Huấn luyện model churn.")
+    parser.add_argument(
+        "--model",
+        choices=MODEL_NAMES,
+        default="logreg",
+        help="Loại mô hình cần huấn luyện.",
+    )
     parser.add_argument(
         "--class-weight",
         choices=["none", "balanced"],
@@ -117,10 +105,10 @@ def main(argv: list[str] | None = None) -> int:
     X_train, y_train = load_xy(X_TRAIN_PATH, Y_TRAIN_PATH)
     X_val, y_val = load_xy(X_VAL_PATH, Y_VAL_PATH)
 
-    model = build_pipeline(X_train, class_weight=class_weight, C=args.C)
+    model = build_pipeline(X_train, model=args.model, class_weight=class_weight, C=args.C)
     train(model, X_train, y_train)
 
-    print(f"Đã huấn luyện LogisticRegression (class_weight={class_weight}, C={args.C})")
+    print(f"Đã huấn luyện {args.model} (class_weight={class_weight}, C={args.C})")
     print(f"  Train: {len(X_train)} mẫu | Val: {len(X_val)} mẫu")
 
     metrics: dict[str, dict[str, float]] = {
@@ -139,7 +127,7 @@ def main(argv: list[str] | None = None) -> int:
         joblib.dump(model, args.model_out)
         args.metrics_out.parent.mkdir(parents=True, exist_ok=True)
         payload = {
-            "model": "LogisticRegression",
+            "model": args.model,
             "params": {"class_weight": class_weight, "C": args.C},
             "n_features": int(X_train.shape[1]),
             "metrics": metrics,
