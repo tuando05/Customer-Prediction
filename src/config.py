@@ -36,6 +36,7 @@ TRAIN_METRICS_PATH = REPORTS_DIR / "train_metrics.json"
 MODEL_COMPARISON_PATH = REPORTS_DIR / "model_comparison.csv"
 IMBALANCE_COMPARISON_PATH = REPORTS_DIR / "imbalance_comparison.csv"
 THRESHOLD_CURVE_PATH = REPORTS_DIR / "threshold_curve.csv"
+TUNING_RESULTS_PATH = REPORTS_DIR / "tuning_results.json"
 
 # ---------------------------------------------------------------------------
 # Cột & nhãn
