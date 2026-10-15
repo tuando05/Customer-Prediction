@@ -37,6 +37,9 @@ MODEL_COMPARISON_PATH = REPORTS_DIR / "model_comparison.csv"
 IMBALANCE_COMPARISON_PATH = REPORTS_DIR / "imbalance_comparison.csv"
 THRESHOLD_CURVE_PATH = REPORTS_DIR / "threshold_curve.csv"
 TUNING_RESULTS_PATH = REPORTS_DIR / "tuning_results.json"
+SHAP_IMPORTANCE_PATH = REPORTS_DIR / "shap_importance.csv"
+SHAP_BAR_PATH = REPORTS_DIR / "shap_bar.png"
+SHAP_SUMMARY_PATH = REPORTS_DIR / "shap_summary.png"
 
 # ---------------------------------------------------------------------------
 # Cột & nhãn

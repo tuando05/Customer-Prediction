@@ -33,6 +33,7 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   │   ├── compare.py          # so sánh mô hình bằng CV
 │   │   ├── imbalance.py        # thí nghiệm mất cân bằng lớp
 │   │   ├── select_threshold.py # chọn threshold quyết định
+│   │   ├── explain.py          # phân tích SHAP
 │   │   ├── tune.py             # tinh chỉnh siêu tham số
 │   │   └── predict.py          # inference
 │   └── pipeline.py             # pipeline huấn luyện end-to-end

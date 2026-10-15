@@ -47,6 +47,8 @@ def _make_rf(**kw) -> RandomForestClassifier:
         n_estimators=kw.get("n_estimators", 300),
         max_depth=kw.get("max_depth"),
         min_samples_leaf=kw.get("min_samples_leaf", 1),
+        min_samples_split=kw.get("min_samples_split", 2),
+        max_features=kw.get("max_features", "sqrt"),
         class_weight=kw.get("class_weight"),
         random_state=RANDOM_STATE,
         n_jobs=-1,
