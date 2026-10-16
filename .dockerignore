@@ -16,11 +16,12 @@ __pycache__/
 mlruns/
 mlflow.db
 
-# Không cần trong image serving
+# Không cần trong image serving (nhưng giữ tham số tuned để model khớp)
 notebooks/
 tests/
 docs/
-reports/
+reports/*
+!reports/tuning_results.json
 data/processed/
 artifacts/
 

@@ -20,6 +20,8 @@ COPY src ./src
 COPY app ./app
 COPY pyproject.toml ./
 COPY data/raw ./data/raw
+# Tham số đã tune (để model trong image khớp đúng model cuối).
+COPY reports/tuning_results.json ./reports/tuning_results.json
 
 # Huấn luyện model cuối -> artifacts/churn_model.joblib + artifacts/threshold.json
 RUN python -m src.pipeline --no-test
