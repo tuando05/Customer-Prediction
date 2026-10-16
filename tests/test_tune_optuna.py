@@ -18,6 +18,8 @@ FIXED = {
         "colsample_bytree": 0.8,
         "min_child_weight": 1,
         "gamma": 0.1,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.0,
         "scale_pos_weight": 2.77,
     },
     "rf": {

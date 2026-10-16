@@ -28,7 +28,8 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── features/
 │   │   ├── preprocess.py       # làm sạch + pipeline tiền xử lý
 │   │   ├── split.py            # chia train/val/test (stratified)
-│   │   └── build_features.py   # feature engineering (Giai đoạn 2)
+│   │   ├── build_features.py   # feature engineering (Giai đoạn 2)
+│   │   └── select.py           # chọn lọc/bỏ đặc trưng (Giai đoạn 4)
 │   ├── models/
 │   │   ├── train.py            # huấn luyện
 │   │   ├── evaluate.py         # đánh giá
@@ -37,7 +38,11 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   │   ├── imbalance.py        # thí nghiệm mất cân bằng lớp
 │   │   ├── select_threshold.py # chọn threshold quyết định
 │   │   ├── explain.py          # phân tích SHAP
-│   │   ├── tune.py             # tinh chỉnh siêu tham số
+│   │   ├── tune.py             # tinh chỉnh (RandomizedSearchCV)
+│   │   ├── tune_optuna.py      # tinh chỉnh nâng cao (Optuna)
+│   │   ├── feature_select.py   # so sánh các bộ đặc trưng
+│   │   ├── resample.py         # SMOTE vs class weight
+│   │   ├── calibrate.py        # calibration xác suất
 │   │   └── predict.py          # inference
 │   └── pipeline.py             # pipeline huấn luyện end-to-end
 ├── app/
@@ -52,7 +57,11 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── test_evaluate.py
 │   ├── test_tune.py
 │   ├── test_explain.py
-│   └── test_tracking.py
+│   ├── test_tracking.py
+│   ├── test_select.py
+│   ├── test_resample.py
+│   ├── test_tune_optuna.py
+│   └── test_calibrate.py
 ├── scripts/
 │   └── make_sample_data.py   # sinh mẫu dữ liệu cho test/CI
 ├── .github/workflows/ci.yml  # CI: lint + build model từ mẫu + tests
@@ -65,6 +74,7 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── phase2_results.md     # kết quả Giai đoạn 2
 │   ├── phase3_plan.md        # kế hoạch chi tiết Giai đoạn 3
 │   ├── phase4_plan.md        # kế hoạch chi tiết Giai đoạn 4
+│   ├── phase4_results.md     # kết quả Giai đoạn 4
 │   └── deployment.md         # hướng dẫn triển khai & vận hành
 ├── Dockerfile                # image API (model huấn luyện sẵn khi build)
 ├── .dockerignore
@@ -89,7 +99,7 @@ python -m src.features.split
 # 4. Huấn luyện model (baseline) -> artifacts/churn_model.joblib
 python -m src.models.train
 
-# 5. Huấn luyện model cuối + chọn threshold (mặc định XGBoost tuned + balanced)
+# 5. Huấn luyện model cuối + chọn threshold (mặc định XGBoost Optuna-tuned)
 python -m src.models.select_threshold
 
 # 6. (tùy chọn) Dự đoán nhanh trên file CSV
@@ -160,10 +170,11 @@ bị gitignore, CI **dựng một model nhỏ từ mẫu đã commit** `tests/da
 2. **Giai đoạn 2 — Cải thiện mô hình:** EDA sâu, xử lý mất cân bằng, feature engineering,
    so sánh Decision Tree / Random Forest / XGBoost, tuning, SHAP, chọn threshold.
 3. **Giai đoạn 3 — Kiểm thử & đóng gói:** tests, MLflow, Docker, GitHub Actions. *(hoàn tất)*
-4. **Giai đoạn 4 — Cải thiện mô hình:** feature selection (SHAP), resampling, Optuna, calibration.
+4. **Giai đoạn 4 — Cải thiện mô hình:** feature selection (SHAP), resampling, Optuna, calibration. *(hoàn tất)*
 
-> Trạng thái hiện tại: **hoàn tất Giai đoạn 3** — MLflow tracking, Docker (image chạy
-> `/health` OK), CI (lint + tests), tài liệu triển khai.
-> Best model (Giai đoạn 2) = **XGBoost tuned + `scale_pos_weight` balanced + threshold 0.53**
-> — val PR-AUC 0.673 / Recall 0.78, test PR-AUC 0.623 / Recall 0.75.
+> Trạng thái hiện tại: **hoàn tất Giai đoạn 3 và 4**. Best model = **XGBoost (Optuna-tuned,
+> `max_depth=3`) + threshold 0.35** — val PR-AUC 0.682 / ROC-AUC 0.860,
+> test PR-AUC 0.642 / ROC-AUC 0.837 / F1 0.621.
+> (Đã có EDA, feature engineering, so sánh mô hình, mất cân bằng, SHAP, MLflow, Docker, CI;
+> Giai đoạn 4: feature selection, SMOTE, Optuna, calibration.)
 

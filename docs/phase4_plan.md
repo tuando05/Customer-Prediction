@@ -82,15 +82,15 @@ Từ SHAP (M5) đã biết:
 | P4-2 ✅ | Resampling | `src/models/resample.py` + so sánh SMOTE vs class weight | có |
 | P4-3 ✅ | Optuna tuning | `src/models/tune_optuna.py` + `reports/optuna_results.json` | có |
 | P4-4 ✅ | Calibration | `src/models/calibrate.py` + đường cong calibration | có |
-| P4-5 | Chốt & báo cáo | cập nhật pipeline/model cuối + `docs/phase4_results.md` | có |
+| P4-5 ✅ | Chốt & báo cáo | `docs/phase4_results.md` + model cuối (threshold 0.35) | có |
 
 ## 5. Definition of Done
 
 - [x] Có bảng so sánh công bằng (CV, cùng folds) cho các biến thể.
-- [ ] Model cuối có **CV PR-AUC tốt hơn hoặc bằng** 0.6675 (kèm khoảng nhiễu).
-- [ ] Threshold chọn trên val; test đánh giá **một lần**.
-- [ ] Pipeline/API/README cập nhật; tests xanh; CI xanh.
-- [ ] Ghi rõ **những gì không cải thiện** (nếu có) — không tô hồng kết quả.
+- [x] Model cuối có **CV PR-AUC tốt hơn hoặc bằng** 0.6675 (đạt 0.6768, kèm khoảng nhiễu).
+- [x] Threshold chọn trên val; test đánh giá **một lần**.
+- [x] Pipeline/API/README cập nhật; tests xanh; CI xanh.
+- [x] Ghi rõ **những gì không cải thiện** (SMOTE, calibration, feature selection) — không tô hồng kết quả.
 
 ## 6. Rủi ro & lưu ý
 
