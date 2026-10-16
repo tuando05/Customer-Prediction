@@ -47,7 +47,8 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 ├── artifacts/                # model đã huấn luyện (không commit)
 ├── docs/
 │   ├── phase2_plan.md        # kế hoạch chi tiết Giai đoạn 2
-│   └── phase2_results.md     # kết quả Giai đoạn 2
+│   ├── phase2_results.md     # kết quả Giai đoạn 2
+│   └── phase3_plan.md        # kế hoạch chi tiết Giai đoạn 3
 ├── requirements.txt
 ├── pyproject.toml
 └── README.md

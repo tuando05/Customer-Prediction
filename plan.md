@@ -103,6 +103,8 @@ churn-mle/
 
 ### Giai đoạn 3 — Kiểm thử & đóng gói (hỗ trợ, sau MVP)
 
+> Kế hoạch chi tiết: [`docs/phase3_plan.md`](docs/phase3_plan.md).
+
 **Mục tiêu:** Làm dự án dễ chạy lại, kiểm thử và trình diễn.
 
 1. Viết test cho model inference và API.
