@@ -34,6 +34,7 @@ IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg"}
 
 def _import_mlflow():
     """Import MLflow theo kiểu lazy; trả về ``None`` nếu chưa cài."""
+    os.environ.setdefault("MLFLOW_DISABLE_AGENT_HINT", "1")
     try:
         import mlflow  # noqa: PLC0415
     except ImportError:

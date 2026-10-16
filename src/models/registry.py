@@ -22,6 +22,7 @@ from xgboost import XGBClassifier
 from src.config import RANDOM_STATE, TUNING_RESULTS_PATH
 from src.features.build_features import FeatureEngineer, add_engineered_features
 from src.features.preprocess import build_preprocessor
+from src.features.select import DropFeatures
 
 MODEL_NAMES = ["logreg", "dtree", "rf", "xgb"]
 
@@ -88,22 +89,34 @@ def build_estimator(name: str, **kwargs) -> BaseEstimator:
     return MODEL_FACTORIES[key](**kwargs)
 
 
-def build_model_pipeline(X: pd.DataFrame, estimator: BaseEstimator) -> Pipeline:
-    """Lắp pipeline hoàn chỉnh: feature engineering -> tiền xử lý -> estimator.
+def build_model_pipeline(
+    X: pd.DataFrame,
+    estimator: BaseEstimator,
+    drop: list[str] | None = None,
+    drop_suffix: list[str] | None = None,
+) -> Pipeline:
+    """Lắp pipeline hoàn chỉnh: feature engineering -> tiền xử lý -> (chọn lọc) -> estimator.
 
     ``ColumnTransformer`` được dựng từ các cột **sau** feature engineering nên
     ``FeatureEngineer`` phải đứng trước. Việc này chỉ dùng *tên cột* (không dùng
     giá trị) để cấu hình, nên có thể dựng trên toàn bộ tập train mà không rò rỉ.
+
+    Nếu truyền ``drop``/``drop_suffix``, thêm bước :class:`DropFeatures` sau tiền
+    xử lý (khi đó ``ColumnTransformer`` xuất ra pandas để loại cột theo tên).
     """
     engineered = add_engineered_features(X)
     preprocessor = build_preprocessor(engineered)
-    return Pipeline(
-        steps=[
-            ("features", FeatureEngineer()),
-            ("preprocessor", preprocessor),
-            ("classifier", estimator),
-        ]
-    )
+
+    steps: list[tuple[str, object]] = [
+        ("features", FeatureEngineer()),
+        ("preprocessor", preprocessor),
+    ]
+    if drop or drop_suffix:
+        preprocessor.set_output(transform="pandas")
+        steps.append(("select", DropFeatures(drop=drop, drop_suffix=drop_suffix)))
+    steps.append(("classifier", estimator))
+
+    return Pipeline(steps=steps)
 
 
 # ---------------------------------------------------------------------------

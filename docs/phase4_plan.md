@@ -29,6 +29,11 @@ Từ SHAP (M5) đã biết:
 
 ## 3. Nhóm công việc
 
+> **Kết quả P4-1 (feature selection):** khác biệt giữa các bộ đặc trưng **không đáng kể**
+> (CV PR-AUC: `no_dup` 0.6677, `no_internet_dummies` 0.6670, `full` 0.6660, `lean` 0.6637;
+> std ≈ 0.022 → nằm trong nhiễu). Kết luận: các đặc trưng dư thừa **không gây hại** cho
+> PR-AUC; `no_dup` (bỏ `is_month_to_month`) nhỉnh hơn **rất nhẹ** và gọn hơn.
+
 ### A. Feature selection (SHAP + RFE)
 - Bỏ đặc trưng dư thừa/≈0: `is_month_to_month` (trùng `Contract`), dummy `*_No internet service`.
 - So sánh **3 bộ đặc trưng**: `full` (hiện tại) / `lean` (bỏ dư thừa) / `shap_top_k`.
@@ -56,7 +61,7 @@ Từ SHAP (M5) đã biết:
 
 | # | Milestone | Deliverable | Commit |
 |---|-----------|-------------|--------|
-| P4-1 | Feature selection | `src/models/feature_select.py` + bảng so sánh bộ đặc trưng | có |
+| P4-1 ✅ | Feature selection | `src/features/select.py` (`DropFeatures`) + `src/models/feature_select.py` + bảng so sánh | có |
 | P4-2 | Resampling | `src/models/resample.py` + so sánh SMOTE vs class weight | có |
 | P4-3 | Optuna tuning | `src/models/tune_optuna.py` + `reports/optuna_results.json` | có |
 | P4-4 | Calibration | `src/models/calibrate.py` + đường cong calibration | có |
@@ -64,7 +69,7 @@ Từ SHAP (M5) đã biết:
 
 ## 5. Definition of Done
 
-- [ ] Có bảng so sánh công bằng (CV, cùng folds) cho các biến thể.
+- [x] Có bảng so sánh công bằng (CV, cùng folds) cho các biến thể.
 - [ ] Model cuối có **CV PR-AUC tốt hơn hoặc bằng** 0.6675 (kèm khoảng nhiễu).
 - [ ] Threshold chọn trên val; test đánh giá **một lần**.
 - [ ] Pipeline/API/README cập nhật; tests xanh; CI xanh.

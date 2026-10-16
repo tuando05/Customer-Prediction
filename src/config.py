@@ -42,6 +42,12 @@ SHAP_IMPORTANCE_PATH = REPORTS_DIR / "shap_importance.csv"
 SHAP_BAR_PATH = REPORTS_DIR / "shap_bar.png"
 SHAP_SUMMARY_PATH = REPORTS_DIR / "shap_summary.png"
 
+# Giai đoạn 4
+FEATURE_SELECTION_PATH = REPORTS_DIR / "feature_selection.csv"
+RESAMPLE_COMPARISON_PATH = REPORTS_DIR / "resample_comparison.csv"
+OPTUNA_RESULTS_PATH = REPORTS_DIR / "optuna_results.json"
+CALIBRATION_PATH = REPORTS_DIR / "calibration.csv"
+
 # ---------------------------------------------------------------------------
 # Theo dõi thí nghiệm (MLflow)
 # ---------------------------------------------------------------------------
