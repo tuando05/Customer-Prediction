@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from pathlib import Path
 
 import matplotlib
 
@@ -41,7 +40,6 @@ from src.models.registry import (  # noqa: E402
     MODEL_NAMES,
     build_estimator,
     build_model_pipeline,
-    load_tuned_params,
     resolve_estimator_params,
 )
 from src.models.train import load_xy  # noqa: E402

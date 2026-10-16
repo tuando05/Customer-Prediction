@@ -22,8 +22,9 @@ Cách dùng::
 from __future__ import annotations
 
 import os
+from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 from src.config import MLFLOW_EXPERIMENT, MLFLOW_TRACKING_URI
 

@@ -290,7 +290,7 @@ def check_categorical(df: pd.DataFrame, target: str | None, id_col: str | None) 
         r.lines.append(f"{col}: {nunique} giá trị | {preview}")
         if nunique <= 1:
             r.status = STATUS_WARN
-            r.lines.append(f"  => cột hằng số, nên loại bỏ.")
+            r.lines.append("  => cột hằng số, nên loại bỏ.")
         elif nunique > CATEGORICAL_MAX_UNIQUE:
             r.status = STATUS_WARN
             r.lines.append(f"  => cardinality cao ({nunique}), cân nhắc xử lý riêng.")

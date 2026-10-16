@@ -95,7 +95,7 @@ def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
 class FeatureEngineer(BaseEstimator, TransformerMixin):
     """Transformer bọc ``add_engineered_features`` để dùng trong sklearn Pipeline."""
 
-    def fit(self, X, y=None) -> "FeatureEngineer":
+    def fit(self, X, y=None) -> FeatureEngineer:
         # Ghi nhớ tên cột gốc để Pipeline/predictor kiểm tra đầu vào.
         self.feature_names_in_ = np.asarray(pd.DataFrame(X).columns, dtype=object)
         self.n_features_in_ = len(self.feature_names_in_)

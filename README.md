@@ -1,5 +1,7 @@
 # Customer Churn Prediction
 
+![CI](https://github.com/tuando05/Customer-Prediction/actions/workflows/ci.yml/badge.svg)
+
 Dự đoán khách hàng rời bỏ dịch vụ (churn) trên bộ dữ liệu **Telco Customer Churn**,
 tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-first**.
 
@@ -42,6 +44,7 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── main.py               # FastAPI
 │   └── schemas.py            # Pydantic schemas
 ├── tests/
+│   ├── data/sample_raw.csv   # mẫu 200 dòng cho CI (đã commit)
 │   ├── test_model.py
 │   ├── test_api.py
 │   ├── test_features.py
@@ -50,6 +53,9 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── test_tune.py
 │   ├── test_explain.py
 │   └── test_tracking.py
+├── scripts/
+│   └── make_sample_data.py   # sinh mẫu dữ liệu cho test/CI
+├── .github/workflows/ci.yml  # CI: lint + build model từ mẫu + tests
 ├── reports/                  # kết quả đánh giá (không commit)
 ├── artifacts/                # model đã huấn luyện (không commit)
 ├── mlruns/                   # artifact MLflow (không commit)
@@ -58,7 +64,10 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── phase2_plan.md        # kế hoạch chi tiết Giai đoạn 2
 │   ├── phase2_results.md     # kết quả Giai đoạn 2
 │   └── phase3_plan.md        # kế hoạch chi tiết Giai đoạn 3
-├── requirements.txt
+├── Dockerfile                # image API (model huấn luyện sẵn khi build)
+├── .dockerignore
+├── requirements.txt          # phụ thuộc đầy đủ (dev/EDA)
+├── requirements-serve.txt    # phụ thuộc tối giản cho image
 ├── pyproject.toml
 └── README.md
 ```
@@ -120,6 +129,28 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 - Tên run: `train-<model>`, `compare-<model>`, `tune-<model>` / `tune-summary`, `final-<model>`.
 - Tắt theo dõi: thêm cờ `--no-mlflow` hoặc đặt biến môi trường `CHURN_MLFLOW=0`.
 - Đổi backend/UI khác: đặt biến môi trường `MLFLOW_TRACKING_URI`.
+
+## Docker
+
+Image **tự huấn luyện model khi build** (dùng `requirements-serve.txt` để nhẹ), nên
+cần `data/raw/*.csv` trong thư mục dự án trước khi build.
+
+```bash
+docker build -t churn-api .
+docker run -p 8000:8000 churn-api
+# -> http://127.0.0.1:8000/health  |  http://127.0.0.1:8000/docs
+```
+
+## Kiểm thử & CI
+
+```bash
+pytest -q         # 35 test (model, API, features, registry, evaluate, tune, explain, tracking)
+ruff check .      # lint
+```
+
+CI (`.github/workflows/ci.yml`) chạy lint + tests trên mỗi lần push/PR. Vì `data/`
+bị gitignore, CI **dựng một model nhỏ từ mẫu đã commit** `tests/data/sample_raw.csv`
+để bộ test chạy thật, không bị skip.
 
 ## Lộ trình
 

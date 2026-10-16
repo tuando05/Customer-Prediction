@@ -28,7 +28,6 @@ from sklearn.pipeline import Pipeline
 from src import tracking
 from src.config import (
     MODEL_PATH,
-    RANDOM_STATE,
     TRAIN_METRICS_PATH,
     X_TEST_PATH,
     X_TRAIN_PATH,

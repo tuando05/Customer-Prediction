@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from src.models.explain import _positive_class_values, load_tuned_params
+from src.models.explain import _positive_class_values
+from src.models.registry import load_tuned_params
 
 
 def test_positive_class_values_2d():

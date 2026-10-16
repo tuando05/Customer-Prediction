@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CHURN_MLFLOW: "0"  # CI không cần log experiment
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      # data/ bị gitignore nên không có trên CI: dựng model nhỏ từ mẫu đã commit
+      # để bộ test chạy thật (không bị skip).
+      - name: Build small model from sample fixture
+        run: |
+          python -m src.features.preprocess --path tests/data/sample_raw.csv
+          python -m src.features.split
+          python -m src.models.select_threshold --no-mlflow
+
+      - name: Run tests
+        run: pytest -q

@@ -8,8 +8,8 @@ mọi mô hình được đánh giá trên cùng một cách xử lý dữ liệ
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import pandas as pd
 from sklearn.base import BaseEstimator
