@@ -64,6 +64,7 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── phase2_plan.md        # kế hoạch chi tiết Giai đoạn 2
 │   ├── phase2_results.md     # kết quả Giai đoạn 2
 │   ├── phase3_plan.md        # kế hoạch chi tiết Giai đoạn 3
+│   ├── phase4_plan.md        # kế hoạch chi tiết Giai đoạn 4
 │   └── deployment.md         # hướng dẫn triển khai & vận hành
 ├── Dockerfile                # image API (model huấn luyện sẵn khi build)
 ├── .dockerignore
@@ -158,7 +159,8 @@ bị gitignore, CI **dựng một model nhỏ từ mẫu đã commit** `tests/da
 1. **Giai đoạn 1 — MVP:** dữ liệu thô → Logistic Regression baseline → FastAPI (`/health`, `/predict`).
 2. **Giai đoạn 2 — Cải thiện mô hình:** EDA sâu, xử lý mất cân bằng, feature engineering,
    so sánh Decision Tree / Random Forest / XGBoost, tuning, SHAP, chọn threshold.
-3. **Giai đoạn 3 — Kiểm thử & đóng gói:** tests, MLflow, Docker, GitHub Actions.
+3. **Giai đoạn 3 — Kiểm thử & đóng gói:** tests, MLflow, Docker, GitHub Actions. *(hoàn tất)*
+4. **Giai đoạn 4 — Cải thiện mô hình:** feature selection (SHAP), resampling, Optuna, calibration.
 
 > Trạng thái hiện tại: **hoàn tất Giai đoạn 3** — MLflow tracking, Docker (image chạy
 > `/health` OK), CI (lint + tests), tài liệu triển khai.

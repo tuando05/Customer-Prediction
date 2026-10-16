@@ -119,6 +119,20 @@ churn-mle/
 
 **Kết quả:** Dự án dễ tái sử dụng, kiểm thử và trình diễn.
 
+### Giai đoạn 4 — Cải thiện chất lượng mô hình (MLE, sau cùng)
+
+> Kế hoạch chi tiết: [`docs/phase4_plan.md`](docs/phase4_plan.md).
+
+**Mục tiêu:** Nâng PR-AUC bằng feature selection, resampling, tuning nâng cao và calibration.
+
+1. Chọn lọc đặc trưng theo SHAP (bỏ dư thừa / ≈0).
+2. So sánh resampling (SMOTE) với class weights.
+3. Tinh chỉnh bằng Optuna (nhiều trials hơn).
+4. Calibration xác suất.
+5. Chốt model + đánh giá test một lần + báo cáo.
+
+**Kết quả:** Mô hình tốt hơn (đo bằng CV) kèm đánh giá trung thực về giới hạn của dữ liệu.
+
 ## 4. Nguyên tắc triển khai
 
 - **MVP trước:** Đưa mô hình + API chạy được nhanh nhất, rồi mới tối ưu. Không đợi hoàn hảo mới ra sản phẩm.
