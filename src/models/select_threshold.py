@@ -22,6 +22,7 @@ import joblib
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
+from src import tracking
 from src.config import (
     MODEL_PATH,
     THRESHOLD_CURVE_PATH,
@@ -71,6 +72,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--cost-fp", type=float, default=1.0, help="Cho strategy min_cost.")
     parser.add_argument("--include-test", action="store_true", help="Đánh giá thêm trên test.")
     parser.add_argument("--no-save", action="store_true", help="Không ghi model/threshold.")
+    parser.add_argument("--no-mlflow", action="store_true", help="Không log vào MLflow.")
     return parser.parse_args(argv)
 
 
@@ -162,6 +164,23 @@ def main(argv: list[str] | None = None) -> int:
         print(f"\nĐã lưu model: {MODEL_PATH}")
         print(f"Đã lưu threshold: {THRESHOLD_PATH} (={chosen['threshold']:.2f})")
         print(f"Đã lưu threshold curve: {THRESHOLD_CURVE_PATH}")
+
+    if not args.no_mlflow and tracking.track_run(
+        f"final-{args.model}",
+        params={
+            "model": args.model,
+            "class_weight": class_weight,
+            "tuned": args.tuned,
+            "strategy": args.strategy,
+            "threshold": chosen["threshold"],
+            "min_recall": args.min_recall,
+            "cost_fn": args.cost_fn,
+            "cost_fp": args.cost_fp,
+        },
+        metrics=metrics,
+        artifacts=[MODEL_PATH, THRESHOLD_PATH, THRESHOLD_CURVE_PATH],
+    ):
+        print("Đã log lần chạy vào MLflow (mlruns/).")
     return 0
 
 

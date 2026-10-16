@@ -25,6 +25,7 @@ import joblib
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
+from src import tracking
 from src.config import (
     MODEL_PATH,
     RANDOM_STATE,
@@ -91,6 +92,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--model-out", type=Path, default=MODEL_PATH, help="Nơi lưu model.")
     parser.add_argument("--metrics-out", type=Path, default=TRAIN_METRICS_PATH, help="Nơi lưu metrics.")
     parser.add_argument("--no-save", action="store_true", help="Không ghi model/metrics.")
+    parser.add_argument("--no-mlflow", action="store_true", help="Không log vào MLflow.")
     return parser.parse_args(argv)
 
 
@@ -135,6 +137,23 @@ def main(argv: list[str] | None = None) -> int:
         args.metrics_out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         print(f"\nĐã lưu model: {args.model_out}")
         print(f"Đã lưu metrics: {args.metrics_out}")
+
+    tracked = tracking.track_run(
+        f"train-{args.model}",
+        params={
+            "model": args.model,
+            "class_weight": class_weight,
+            "C": args.C,
+            "threshold": args.threshold,
+            "n_train": len(X_train),
+            "n_features": int(X_train.shape[1]),
+        },
+        metrics=metrics,
+        artifacts=[args.model_out, args.metrics_out],
+        enabled=not args.no_mlflow,
+    )
+    if tracked:
+        print("Đã log lần chạy vào MLflow (mlruns/).")
     return 0
 
 

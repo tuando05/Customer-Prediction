@@ -14,6 +14,9 @@ jupyter
 fastapi
 uvicorn[standard]
 
+# Experiment tracking
+mlflow
+
 # Testing
 pytest
 httpx

@@ -6,6 +6,7 @@ hard-code rải rác trong code.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -40,6 +41,20 @@ TUNING_RESULTS_PATH = REPORTS_DIR / "tuning_results.json"
 SHAP_IMPORTANCE_PATH = REPORTS_DIR / "shap_importance.csv"
 SHAP_BAR_PATH = REPORTS_DIR / "shap_bar.png"
 SHAP_SUMMARY_PATH = REPORTS_DIR / "shap_summary.png"
+
+# ---------------------------------------------------------------------------
+# Theo dõi thí nghiệm (MLflow)
+# ---------------------------------------------------------------------------
+
+MLFLOW_DIR = PROJECT_ROOT / "mlruns"
+MLFLOW_DB_PATH = PROJECT_ROOT / "mlflow.db"
+# Backend SQLite cục bộ (MLflow 3.x khuyến nghị thay cho file store; vẫn local,
+# không cần server). Có thể override bằng biến môi trường MLFLOW_TRACKING_URI
+# để trỏ tới backend/UI khác.
+MLFLOW_TRACKING_URI = os.environ.get(
+    "MLFLOW_TRACKING_URI", f"sqlite:///{MLFLOW_DB_PATH.as_posix()}"
+)
+MLFLOW_EXPERIMENT = "churn-telco"
 
 # ---------------------------------------------------------------------------
 # Cột & nhãn

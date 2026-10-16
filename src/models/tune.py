@@ -25,6 +25,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 
+from src import tracking
 from src.config import (
     RANDOM_STATE,
     TUNING_RESULTS_PATH,
@@ -118,6 +119,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--folds", type=int, default=5, help="Số folds CV.")
     parser.add_argument("--output", type=Path, default=TUNING_RESULTS_PATH)
     parser.add_argument("--no-save", action="store_true")
+    parser.add_argument("--no-mlflow", action="store_true", help="Không log vào MLflow.")
     return parser.parse_args(argv)
 
 
@@ -153,6 +155,37 @@ def main(argv: list[str] | None = None) -> int:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(results, indent=2), encoding="utf-8")
         print(f"Đã lưu: {args.output}")
+
+    if not args.no_mlflow:
+        for res in results:
+            tracking.track_run(
+                f"tune-{res['model']}",
+                params={
+                    "model": res["model"],
+                    "n_iter": args.n_iter,
+                    "folds": args.folds,
+                    "scoring": SCORING,
+                    "best_params": res["best_params"],
+                },
+                metrics={
+                    "cv_pr_auc": res["cv_pr_auc"],
+                    "val_pr_auc": res["val_pr_auc"],
+                    "val_recall": res["val_recall"],
+                    "val_f1": res["val_f1"],
+                },
+            )
+        if tracking.track_run(
+            "tune-summary",
+            params={
+                "models": " ".join(args.models),
+                "n_iter": args.n_iter,
+                "folds": args.folds,
+                "best_model": best["model"],
+            },
+            metrics={"best_cv_pr_auc": best["cv_pr_auc"]},
+            artifacts=[args.output],
+        ):
+            print("Đã log lần chạy vào MLflow (mlruns/).")
     return 0
 
 

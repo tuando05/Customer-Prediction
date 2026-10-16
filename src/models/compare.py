@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold, cross_validate
 
+from src import tracking
 from src.config import (
     MODEL_COMPARISON_PATH,
     RANDOM_STATE,
@@ -161,6 +162,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--output", type=Path, default=MODEL_COMPARISON_PATH, help="File CSV kết quả."
     )
     parser.add_argument("--no-save", action="store_true", help="Không ghi file CSV.")
+    parser.add_argument("--no-mlflow", action="store_true", help="Không log vào MLflow.")
     return parser.parse_args(argv)
 
 
@@ -190,6 +192,44 @@ def main(argv: list[str] | None = None) -> int:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         df.round(4).to_csv(args.output)
         print(f"Đã lưu: {args.output}")
+
+    if not args.no_mlflow:
+        for name, r in df.iterrows():
+            tracking.track_run(
+                f"compare-{name}",
+                params={
+                    "model": name,
+                    "folds": args.folds,
+                    "class_weight": class_weight,
+                    "scoring": "average_precision",
+                },
+                metrics={
+                    "cv": {
+                        "pr_auc_mean": r["pr_auc_mean"],
+                        "pr_auc_std": r["pr_auc_std"],
+                        "roc_auc_mean": r["roc_auc_mean"],
+                        "recall_mean": r["recall_mean"],
+                        "f1_mean": r["f1_mean"],
+                    },
+                    "val": {
+                        "pr_auc": r["val_pr_auc"],
+                        "recall": r["val_recall"],
+                        "f1": r["val_f1"],
+                    },
+                },
+            )
+        if tracking.track_run(
+            "compare-summary",
+            params={
+                "models": " ".join(args.models),
+                "folds": args.folds,
+                "class_weight": class_weight,
+                "best_model": str(df.index[0]),
+            },
+            metrics={"best_pr_auc_mean": df.iloc[0]["pr_auc_mean"]},
+            artifacts=[args.output],
+        ):
+            print("Đã log lần chạy vào MLflow (mlruns/).")
     return 0
 
 

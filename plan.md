@@ -27,6 +27,7 @@ churn-mle/
 │   └── 02_modeling.ipynb
 ├── src/
 │   ├── config.py
+│   ├── tracking.py
 │   ├── features/
 │   │   ├── preprocess.py
 │   │   ├── split.py
@@ -50,6 +51,7 @@ churn-mle/
 │   └── test_api.py
 ├── reports/
 ├── artifacts/
+├── mlruns/
 ├── requirements.txt
 ├── pyproject.toml
 ├── .gitignore
@@ -62,10 +64,12 @@ churn-mle/
 - `src/features/`: Preprocessing và feature engineering pipeline.
 - `src/models/`: Huấn luyện, tinh chỉnh, đánh giá và dự đoán.
 - `src/pipeline.py`: Pipeline huấn luyện end-to-end.
+- `src/tracking.py`: Theo dõi thí nghiệm với MLflow (local, SQLite).
 - `app/`: Cung cấp model qua REST API.
 - `tests/`: Kiểm tra model và API.
 - `artifacts/`: Lưu model đã huấn luyện.
 - `reports/`: Lưu kết quả đánh giá.
+- `mlruns/`: Artifact của MLflow (không commit).
 
 ## 3. Quy trình thực hiện
 

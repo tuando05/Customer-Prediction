@@ -22,6 +22,7 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   └── 02_modeling.ipynb    # thử nghiệm & so sánh mô hình
 ├── src/
 │   ├── config.py               # đường dẫn & hằng số dùng chung
+│   ├── tracking.py             # theo dõi thí nghiệm với MLflow
 │   ├── features/
 │   │   ├── preprocess.py       # làm sạch + pipeline tiền xử lý
 │   │   ├── split.py            # chia train/val/test (stratified)
@@ -42,9 +43,17 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   └── schemas.py            # Pydantic schemas
 ├── tests/
 │   ├── test_model.py
-│   └── test_api.py
+│   ├── test_api.py
+│   ├── test_features.py
+│   ├── test_registry.py
+│   ├── test_evaluate.py
+│   ├── test_tune.py
+│   ├── test_explain.py
+│   └── test_tracking.py
 ├── reports/                  # kết quả đánh giá (không commit)
 ├── artifacts/                # model đã huấn luyện (không commit)
+├── mlruns/                   # artifact MLflow (không commit)
+├── mlflow.db                 # metadata MLflow/SQLite (không commit)
 ├── docs/
 │   ├── phase2_plan.md        # kế hoạch chi tiết Giai đoạn 2
 │   ├── phase2_results.md     # kết quả Giai đoạn 2
@@ -97,6 +106,21 @@ curl -X POST "http://127.0.0.1:8000/predict" -H "Content-Type: application/json"
 }"
 ```
 
+## Theo dõi thí nghiệm (MLflow)
+
+Các lệnh `train` / `compare` / `tune` / `select_threshold` tự động log
+params, metrics và artifacts vào MLflow. Backend là **SQLite cục bộ**
+(`mlflow.db`), artifacts nằm trong `mlruns/` — không cần server.
+
+```bash
+# Xem giao diện MLflow  ->  http://127.0.0.1:5000
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+```
+
+- Tên run: `train-<model>`, `compare-<model>`, `tune-<model>` / `tune-summary`, `final-<model>`.
+- Tắt theo dõi: thêm cờ `--no-mlflow` hoặc đặt biến môi trường `CHURN_MLFLOW=0`.
+- Đổi backend/UI khác: đặt biến môi trường `MLFLOW_TRACKING_URI`.
+
 ## Lộ trình
 
 1. **Giai đoạn 1 — MVP:** dữ liệu thô → Logistic Regression baseline → FastAPI (`/health`, `/predict`).
@@ -104,8 +128,7 @@ curl -X POST "http://127.0.0.1:8000/predict" -H "Content-Type: application/json"
    so sánh Decision Tree / Random Forest / XGBoost, tuning, SHAP, chọn threshold.
 3. **Giai đoạn 3 — Kiểm thử & đóng gói:** tests, MLflow, Docker, GitHub Actions.
 
-> Trạng thái hiện tại: **hoàn tất Giai đoạn 2**. Best model = **XGBoost tuned +
-> `scale_pos_weight` balanced + threshold 0.53** — val PR-AUC 0.673 / Recall 0.78,
-> test PR-AUC 0.623 / Recall 0.75.
-> (Đã có EDA, feature engineering, so sánh mô hình bằng CV, xử lý mất cân bằng, SHAP.)
+> Trạng thái hiện tại: **Giai đoạn 3 đang thực hiện** — đã xong MLflow tracking (P3-1).
+> Best model (Giai đoạn 2) = **XGBoost tuned + `scale_pos_weight` balanced + threshold 0.53**
+> — val PR-AUC 0.673 / Recall 0.78, test PR-AUC 0.623 / Recall 0.75.
 
