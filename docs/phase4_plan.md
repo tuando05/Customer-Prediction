@@ -46,6 +46,10 @@ Từ SHAP (M5) đã biết:
 > **Phát hiện & sửa bug:** `_make_xgb` trước đây **bỏ qua** `min_child_weight` và `gamma`
 > (không được truyền khi dựng estimator), nên model cuối không khớp cấu hình mà CV đã tối ưu.
 > Đã sửa (thêm cả `reg_alpha`/`reg_lambda`) + test chống tái phát.
+>
+> **Kết quả P4-4 (calibration):** **không cải thiện** — Brier: `none` 0.1294,
+> `sigmoid` 0.1301, `isotonic` 0.1304; log loss cũng nhỉnh hơn. Xác suất của XGBoost
+> **đã đủ hiệu chỉnh** → **giữ model gốc** (đơn giản hơn, không thêm bước).
 
 ### A. Feature selection (SHAP + RFE)
 - Bỏ đặc trưng dư thừa/≈0: `is_month_to_month` (trùng `Contract`), dummy `*_No internet service`.
@@ -77,7 +81,7 @@ Từ SHAP (M5) đã biết:
 | P4-1 ✅ | Feature selection | `src/features/select.py` (`DropFeatures`) + `src/models/feature_select.py` + bảng so sánh | có |
 | P4-2 ✅ | Resampling | `src/models/resample.py` + so sánh SMOTE vs class weight | có |
 | P4-3 ✅ | Optuna tuning | `src/models/tune_optuna.py` + `reports/optuna_results.json` | có |
-| P4-4 | Calibration | `src/models/calibrate.py` + đường cong calibration | có |
+| P4-4 ✅ | Calibration | `src/models/calibrate.py` + đường cong calibration | có |
 | P4-5 | Chốt & báo cáo | cập nhật pipeline/model cuối + `docs/phase4_results.md` | có |
 
 ## 5. Definition of Done
