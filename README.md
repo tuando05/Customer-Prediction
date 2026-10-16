@@ -160,7 +160,8 @@ bị gitignore, CI **dựng một model nhỏ từ mẫu đã commit** `tests/da
    so sánh Decision Tree / Random Forest / XGBoost, tuning, SHAP, chọn threshold.
 3. **Giai đoạn 3 — Kiểm thử & đóng gói:** tests, MLflow, Docker, GitHub Actions.
 
-> Trạng thái hiện tại: **Giai đoạn 3 đang thực hiện** — đã xong MLflow tracking (P3-1).
+> Trạng thái hiện tại: **hoàn tất Giai đoạn 3** — MLflow tracking, Docker (image chạy
+> `/health` OK), CI (lint + tests), tài liệu triển khai.
 > Best model (Giai đoạn 2) = **XGBoost tuned + `scale_pos_weight` balanced + threshold 0.53**
 > — val PR-AUC 0.673 / Recall 0.78, test PR-AUC 0.623 / Recall 0.75.
 
