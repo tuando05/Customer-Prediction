@@ -37,6 +37,15 @@ Từ SHAP (M5) đã biết:
 > **Kết quả P4-2 (resampling):** SMOTE **không giúp** PR-AUC (CV: `none` 0.6661,
 > `balanced` 0.6660, `smote_tomek` 0.6639, `smote` 0.6620). `class_weight`/`scale_pos_weight`
 > vẫn tốt nhất khi xét cả PR-AUC lẫn Recall. → **giữ `balanced`**, không dùng SMOTE.
+>
+> **Kết quả P4-3 (Optuna):** CV PR-AUC **0.6675 → 0.6768** (+0.009) với 200 trials TPE.
+> Mở rộng không gian (thêm `reg_alpha`/`reg_lambda`, 300 trials) **không cải thiện thêm**
+> (0.6763) → giữ kết quả 0.6768. Best params: `max_depth=3`, `lr≈0.016`, `n_estimators=400`,
+> `scale_pos_weight=1.0`.
+>
+> **Phát hiện & sửa bug:** `_make_xgb` trước đây **bỏ qua** `min_child_weight` và `gamma`
+> (không được truyền khi dựng estimator), nên model cuối không khớp cấu hình mà CV đã tối ưu.
+> Đã sửa (thêm cả `reg_alpha`/`reg_lambda`) + test chống tái phát.
 
 ### A. Feature selection (SHAP + RFE)
 - Bỏ đặc trưng dư thừa/≈0: `is_month_to_month` (trùng `Contract`), dummy `*_No internet service`.
@@ -67,7 +76,7 @@ Từ SHAP (M5) đã biết:
 |---|-----------|-------------|--------|
 | P4-1 ✅ | Feature selection | `src/features/select.py` (`DropFeatures`) + `src/models/feature_select.py` + bảng so sánh | có |
 | P4-2 ✅ | Resampling | `src/models/resample.py` + so sánh SMOTE vs class weight | có |
-| P4-3 | Optuna tuning | `src/models/tune_optuna.py` + `reports/optuna_results.json` | có |
+| P4-3 ✅ | Optuna tuning | `src/models/tune_optuna.py` + `reports/optuna_results.json` | có |
 | P4-4 | Calibration | `src/models/calibrate.py` + đường cong calibration | có |
 | P4-5 | Chốt & báo cáo | cập nhật pipeline/model cuối + `docs/phase4_results.md` | có |
 

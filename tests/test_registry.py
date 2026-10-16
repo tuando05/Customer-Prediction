@@ -31,6 +31,21 @@ def test_xgb_scale_pos_weight():
     assert estimator.scale_pos_weight == 2.77
 
 
+def test_xgb_truyen_du_tham_so_tune():
+    """Chống tái phát bug: các tham số tune phải thực sự được truyền vào estimator."""
+    estimator = build_estimator(
+        "xgb",
+        min_child_weight=6,
+        gamma=0.78,
+        reg_alpha=1.5,
+        reg_lambda=2.5,
+    )
+    assert estimator.min_child_weight == 6
+    assert estimator.gamma == 0.78
+    assert estimator.reg_alpha == 1.5
+    assert estimator.reg_lambda == 2.5
+
+
 @pytest.mark.skipif(not X_TEST_PATH.exists(), reason="Chưa có dữ liệu đã chia.")
 def test_pipeline_co_du_ba_buoc():
     X = pd.read_csv(X_TEST_PATH).head(20)
