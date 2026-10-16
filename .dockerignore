@@ -1,0 +1,30 @@
+# Môi trường & VCS
+.venv/
+venv/
+.git/
+.gitignore
+.gitattributes
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# MLflow (local)
+mlruns/
+mlflow.db
+
+# Không cần trong image serving
+notebooks/
+tests/
+docs/
+reports/
+data/processed/
+artifacts/
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store

@@ -18,9 +18,10 @@ data/processed/*
 artifacts/*
 !artifacts/.gitkeep
 
-# Reports
+# Reports (giữ lại tham số đã tune để tái lập model)
 reports/*
 !reports/.gitkeep
+!reports/tuning_results.json
 
 # MLflow (local file store)
 mlruns/

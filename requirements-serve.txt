@@ -1,0 +1,8 @@
+# Phụ thuộc tối giản cho image serving: huấn luyện model + chạy FastAPI.
+# (Không gồm jupyter/seaborn/matplotlib/shap/mlflow để giữ image nhẹ.)
+pandas
+numpy
+scikit-learn
+xgboost
+fastapi
+uvicorn[standard]

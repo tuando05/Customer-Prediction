@@ -1,0 +1,36 @@
+[
+  {
+    "model": "xgb",
+    "cv_pr_auc": 0.6675,
+    "val_pr_auc": 0.6723,
+    "val_recall": 0.7834,
+    "val_f1": 0.6349,
+    "best_params": {
+      "classifier__subsample": 0.8,
+      "classifier__scale_pos_weight": 2.77,
+      "classifier__n_estimators": 400,
+      "classifier__min_child_weight": 3,
+      "classifier__max_depth": 4,
+      "classifier__learning_rate": 0.03,
+      "classifier__gamma": 0.1,
+      "classifier__colsample_bytree": 0.7
+    },
+    "seconds": 20.6
+  },
+  {
+    "model": "rf",
+    "cv_pr_auc": 0.6661,
+    "val_pr_auc": 0.6724,
+    "val_recall": 0.5107,
+    "val_f1": 0.5859,
+    "best_params": {
+      "classifier__n_estimators": 300,
+      "classifier__min_samples_split": 2,
+      "classifier__min_samples_leaf": 5,
+      "classifier__max_features": "sqrt",
+      "classifier__max_depth": 10,
+      "classifier__class_weight": null
+    },
+    "seconds": 40.1
+  }
+]
