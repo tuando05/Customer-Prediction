@@ -72,9 +72,9 @@ Chưa có:
 | # | Milestone | Deliverable | Commit |
 |---|-----------|-------------|--------|
 | P3-1 ✅ | MLflow tracking | log trong train/compare/tune/select_threshold + `mlflow.db` (SQLite) ignored | có |
-| P3-2 | Docker | `Dockerfile`, `.dockerignore`, chạy được API | có |
-| P3-3 | CI + fixtures | `.github/workflows/ci.yml`, fixture test, badge | có |
-| P3-4 | Docs + polish | `docs/deployment.md`, README, ruff | có |
+| P3-2 ✅ | Docker | `Dockerfile` (bake model khi build), `.dockerignore`, `requirements-serve.txt` | có |
+| P3-3 ✅ | CI + fixtures | `.github/workflows/ci.yml`, mẫu `tests/data/sample_raw.csv`, badge, ruff | có |
+| P3-4 ⏳ | Docs + polish | `docs/deployment.md`, README, ruff | có |
 
 Mỗi milestone 1 commit; P3-3 phụ thuộc quyết định về dữ liệu ở Nhóm D.
 
@@ -86,9 +86,9 @@ Mỗi milestone 1 commit; P3-3 phụ thuộc quyết định về dữ liệu �
 ## 5. Definition of Done
 
 - [x] MLflow log được params/metrics/artifacts cho ít nhất `train` và `tune`.
-- [ ] `docker build` + `docker run` chạy API, `/health` trả `model_loaded=true`.
-- [ ] CI tự chạy lint + tests trên push, **không cần** file dữ liệu bị ignore.
-- [ ] Tests quan trọng (features/registry/evaluate/threshold) chạy được trên CI.
+- [ ] `docker build` + `docker run` chạy API, `/health` trả `model_loaded=true`. *(đang chờ verify)*
+- [x] CI tự chạy lint + tests trên push, **không cần** file dữ liệu bị ignore.
+- [x] Tests quan trọng (features/registry/evaluate/threshold) chạy được trên CI.
 - [ ] README + `docs/deployment.md` đủ để người khác dựng lại dự án.
 
 ## 6. Rủi ro & lưu ý

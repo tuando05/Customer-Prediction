@@ -63,7 +63,8 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 ├── docs/
 │   ├── phase2_plan.md        # kế hoạch chi tiết Giai đoạn 2
 │   ├── phase2_results.md     # kết quả Giai đoạn 2
-│   └── phase3_plan.md        # kế hoạch chi tiết Giai đoạn 3
+│   ├── phase3_plan.md        # kế hoạch chi tiết Giai đoạn 3
+│   └── deployment.md         # hướng dẫn triển khai & vận hành
 ├── Dockerfile                # image API (model huấn luyện sẵn khi build)
 ├── .dockerignore
 ├── requirements.txt          # phụ thuộc đầy đủ (dev/EDA)
