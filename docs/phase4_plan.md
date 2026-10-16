@@ -33,6 +33,10 @@ Từ SHAP (M5) đã biết:
 > (CV PR-AUC: `no_dup` 0.6677, `no_internet_dummies` 0.6670, `full` 0.6660, `lean` 0.6637;
 > std ≈ 0.022 → nằm trong nhiễu). Kết luận: các đặc trưng dư thừa **không gây hại** cho
 > PR-AUC; `no_dup` (bỏ `is_month_to_month`) nhỉnh hơn **rất nhẹ** và gọn hơn.
+>
+> **Kết quả P4-2 (resampling):** SMOTE **không giúp** PR-AUC (CV: `none` 0.6661,
+> `balanced` 0.6660, `smote_tomek` 0.6639, `smote` 0.6620). `class_weight`/`scale_pos_weight`
+> vẫn tốt nhất khi xét cả PR-AUC lẫn Recall. → **giữ `balanced`**, không dùng SMOTE.
 
 ### A. Feature selection (SHAP + RFE)
 - Bỏ đặc trưng dư thừa/≈0: `is_month_to_month` (trùng `Contract`), dummy `*_No internet service`.
@@ -62,7 +66,7 @@ Từ SHAP (M5) đã biết:
 | # | Milestone | Deliverable | Commit |
 |---|-----------|-------------|--------|
 | P4-1 ✅ | Feature selection | `src/features/select.py` (`DropFeatures`) + `src/models/feature_select.py` + bảng so sánh | có |
-| P4-2 | Resampling | `src/models/resample.py` + so sánh SMOTE vs class weight | có |
+| P4-2 ✅ | Resampling | `src/models/resample.py` + so sánh SMOTE vs class weight | có |
 | P4-3 | Optuna tuning | `src/models/tune_optuna.py` + `reports/optuna_results.json` | có |
 | P4-4 | Calibration | `src/models/calibrate.py` + đường cong calibration | có |
 | P4-5 | Chốt & báo cáo | cập nhật pipeline/model cuối + `docs/phase4_results.md` | có |

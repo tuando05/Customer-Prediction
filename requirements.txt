@@ -5,6 +5,10 @@ scikit-learn
 xgboost
 shap
 
+# Imbalance & hyperparameter search (Giai đoạn 4)
+imbalanced-learn
+optuna
+
 # EDA / visualization
 matplotlib
 seaborn
