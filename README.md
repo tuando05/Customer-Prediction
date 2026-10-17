@@ -12,6 +12,9 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 - **Model serving:** đưa mô hình tốt nhất lên FastAPI.
 - **MLOps (hỗ trợ, sau MVP):** tracking experiment và đóng gói ở mức tối thiểu.
 
+> 📄 **Báo cáo tổng kết toàn dự án:** [`docs/project_summary.md`](docs/project_summary.md)
+> — hành trình 4 giai đoạn, model cuối, hạ tầng, bug đã sửa, bài học.
+
 ## Cấu trúc dự án
 
 ```text
@@ -75,6 +78,7 @@ tập trung vào **Machine Learning Engineering (MLE)** theo hướng **MVP-firs
 │   ├── phase3_plan.md        # kế hoạch chi tiết Giai đoạn 3
 │   ├── phase4_plan.md        # kế hoạch chi tiết Giai đoạn 4
 │   ├── phase4_results.md     # kết quả Giai đoạn 4
+│   ├── project_summary.md    # báo cáo tổng kết toàn dự án
 │   └── deployment.md         # hướng dẫn triển khai & vận hành
 ├── Dockerfile                # image API (model huấn luyện sẵn khi build)
 ├── .dockerignore
